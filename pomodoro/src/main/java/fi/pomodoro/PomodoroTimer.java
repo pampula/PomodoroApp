@@ -10,9 +10,10 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 
 /**
- * TODO
+ * Builds and handles the pomodoro timer.
  */
 public class PomodoroTimer {
 
@@ -23,8 +24,9 @@ public class PomodoroTimer {
     private final Insets BTN_PADDING = new Insets(BTN_SPACING);
 
     private final BackgroundFill TIMER_BACKGROUND = 
-        new BackgroundFill(Color.WHITE, new CornerRadii(5), null);
+        new BackgroundFill(Color.WHITE, new CornerRadii(10), null);
     private final String SEPARATOR = ":";
+    private final Font TIMER_FONT_SIZE = new Font(20);
     private final double COUNTER_SPACING = 20;
     private final Insets COUNTER_PADDING = new Insets(COUNTER_SPACING);
 
@@ -71,6 +73,9 @@ public class PomodoroTimer {
         Label minutes = new Label(Integer.toString(workMin));
         Label separator = new Label(SEPARATOR);
         Label seconds = new Label(Integer.toString(workSec));
+        minutes.setFont(TIMER_FONT_SIZE);
+        separator.setFont(TIMER_FONT_SIZE);
+        seconds.setFont(TIMER_FONT_SIZE);
         HBox counterLayout = new HBox(COUNTER_SPACING, minutes, separator, seconds);
         counterLayout.setAlignment(Pos.BASELINE_CENTER);
         counterLayout.setBackground(new Background(TIMER_BACKGROUND));
