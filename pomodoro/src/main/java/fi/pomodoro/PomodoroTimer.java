@@ -1,5 +1,9 @@
 package fi.pomodoro;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -11,6 +15,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.util.Duration;
 
 /**
  * Builds and handles the pomodoro timer.
@@ -25,18 +30,21 @@ public class PomodoroTimer {
 
     private final BackgroundFill TIMER_BACKGROUND = 
         new BackgroundFill(Color.WHITE, new CornerRadii(10), null);
-    private final String SEPARATOR = ":";
     private final Font TIMER_FONT_SIZE = new Font(20);
-    private final double COUNTER_SPACING = 20;
-    private final Insets COUNTER_PADDING = new Insets(COUNTER_SPACING);
+    private final Insets COUNTER_PADDING = new Insets(20);
 
-    // Times presented as "min:sec"
-    private int workMin;
-    private int workSec;
-    private int shortBreakMin;
-    private int shortBreakSec;
-    private int longBreakMin;
-    private int longBreakSec;
+    private final int workMin;
+    private final int workSec;
+    private final int shortBreakMin;
+    private final int shortBreakSec;
+    private final int longBreakMin;
+    private final int longBreakSec;
+
+    private int minutes;
+    private int seconds;
+    private boolean isRunning = false;
+    private Timeline timeline;
+    private Label timerLabel;
 
     private VBox timerLayout;
     
@@ -57,11 +65,13 @@ public class PomodoroTimer {
         this.shortBreakSec = shortBreakSec;
         this.longBreakMin = longBreakMin;
         this.longBreakSec = longBreakSec;
+        this.minutes = workMin;
+        this.seconds = workSec;
         buildTimer();
     }
 
     /**
-     * Builds the graphical timer
+     * Builds the timer UI
      */
     private void buildTimer() {
         Button startBtn = new Button(START);
@@ -70,18 +80,82 @@ public class PomodoroTimer {
         HBox buttonLayout = new HBox(BTN_SPACING, resetBtn, stopBtn, startBtn);
         buttonLayout.setPadding(BTN_PADDING);
 
-        Label minutes = new Label(Integer.toString(workMin));
-        Label separator = new Label(SEPARATOR);
-        Label seconds = new Label(Integer.toString(workSec));
-        minutes.setFont(TIMER_FONT_SIZE);
-        separator.setFont(TIMER_FONT_SIZE);
-        seconds.setFont(TIMER_FONT_SIZE);
-        HBox counterLayout = new HBox(COUNTER_SPACING, minutes, separator, seconds);
+        startBtn.setOnAction(this::startTimer);
+        stopBtn.setOnAction(event -> stopTimer());
+        resetBtn.setOnAction(this::resetTimer);
+
+        timerLabel = new Label(String.format("%02d:%02d", minutes, seconds));
+        timerLabel.setFont(TIMER_FONT_SIZE);
+        HBox counterLayout = new HBox(timerLabel);
         counterLayout.setAlignment(Pos.BASELINE_CENTER);
         counterLayout.setBackground(new Background(TIMER_BACKGROUND));
         counterLayout.setPadding(COUNTER_PADDING);
 
         timerLayout = new VBox(counterLayout, buttonLayout);
+    }
+
+    /**
+     * Starts the timer countdown.
+     * @param event
+     */
+    private void startTimer(ActionEvent event) {
+        if (!isRunning) {
+            isRunning = true;
+            timeline = new Timeline(
+                new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+                        updateTimer();
+                        if (minutes == 0 && seconds == 0) {
+                            stopTimer();
+                        }
+                    }
+                })
+            );
+            timeline.setCycleCount(Timeline.INDEFINITE);
+            timeline.play();
+        }
+    }
+
+    /**
+     * Stops the timer countdown.
+     */
+    private void stopTimer() {
+        if (isRunning) {
+            isRunning = false;
+            if (timeline != null) {
+                timeline.stop();
+            }
+        }
+    }
+
+    /**
+     * Stops and resets the timer to default values.
+     * @param event
+     */
+    private void resetTimer(ActionEvent event) {
+        stopTimer();
+        minutes = workMin;
+        seconds = workSec;
+        timerLabel.setText(String.format("%02d:%02d", minutes, seconds));
+    }
+
+    /**
+     * Updates the timer UI when a second is passed.
+     */
+    private void updateTimer() {
+        if (seconds == 0) {
+            if (minutes == 0) {
+                stopTimer();
+                return;
+            }
+            minutes--;
+            seconds = 59;
+        } else {
+            seconds--;
+        }
+
+        timerLabel.setText(String.format("%02d:%02d", minutes, seconds));
     }
 
     /**

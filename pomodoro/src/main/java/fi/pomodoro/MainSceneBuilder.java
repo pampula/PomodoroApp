@@ -5,7 +5,6 @@ import javafx.scene.Scene;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
@@ -13,6 +12,13 @@ import javafx.scene.paint.Color;
  * Builds the main scene and adds functionalities.
  */
 public class MainSceneBuilder {
+
+    private final int workMin = 25;
+    private final int workSec = 0;
+    private final int shortBreakMin = 5;
+    private final int shortBreakSec = 0;
+    private final int longBreakMin = 25;
+    private final int longBreakSec = 0;
 
     private final double WIDTH = 1000;
     private final double HEIGHT = 600;
@@ -32,7 +38,8 @@ public class MainSceneBuilder {
      * Builds scene with contents
      */
     private void buildScene() {
-        PomodoroTimer timerObj = new PomodoroTimer(25, 0, 5, 0, 25, 0);
+        PomodoroTimer timerObj = new PomodoroTimer(workMin, workSec, 
+            shortBreakMin, shortBreakSec, longBreakMin, longBreakSec);
         VBox timer = timerObj.getTimer();
         GridPane mainLayout = new GridPane();
         mainLayout.add(timer, 1, 1);
