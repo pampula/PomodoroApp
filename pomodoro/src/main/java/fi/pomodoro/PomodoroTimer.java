@@ -22,6 +22,8 @@ import javafx.util.Duration;
  */
 public class PomodoroTimer {
 
+    private AlertPlayer alertPlayer = new AlertPlayer();
+
     private final String START = "Start";
     private final String STOP = "Stop";
     private final String RESET = "Reset";
@@ -126,6 +128,9 @@ public class PomodoroTimer {
             if (timeline != null) {
                 timeline.stop();
             }
+            if(minutes == 0 && seconds == 0) {
+                alertPlayer.run();
+            }
         }
     }
 
@@ -141,7 +146,8 @@ public class PomodoroTimer {
     }
 
     /**
-     * Updates the timer UI when a second is passed.
+     * Updates the timer UI when a second is passed. When the time runs out, stops
+     * the timer and plays alert sound.
      */
     private void updateTimer() {
         if (seconds == 0) {
