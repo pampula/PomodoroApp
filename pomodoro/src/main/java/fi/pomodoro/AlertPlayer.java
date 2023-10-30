@@ -8,7 +8,7 @@ import javax.sound.sampled.Clip;
 
 public class AlertPlayer implements Runnable {
 
-    private final String MAGIC_ALERT = "resources/magic_alert.wav";
+    private final String MAGIC_ALERT = "resources/alerts/magic_alert.wav";
 
     private String alertSound = MAGIC_ALERT;
 
